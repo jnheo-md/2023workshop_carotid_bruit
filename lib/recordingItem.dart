@@ -16,23 +16,35 @@ class _RecordingItemState extends State<RecordingItem> {
   final FlutterSoundPlayer _myPlayer = FlutterSoundPlayer();
 
   @override
-  void initState() {
-    // TODO: implement initState
-    // initializePlayer();
-    super.initState();
-  }
-
-  // void initializePlayer() async {}
-
-  @override
   void dispose() {
-    // TODO: implement dispose
     _myPlayer.closePlayer();
     super.dispose();
   }
 
+  void startPlayer() async {
+    if (!_myPlayer.isPlaying) {
+      await _myPlayer.openPlayer();
+      await _myPlayer
+          .startPlayer(
+              fromURI: widget.recording.filePath,
+              sampleRate: 16000,
+              codec: Codec.pcm16WAV,
+              whenFinished: () {
+                setState(() {});
+              })
+          .then((value) {
+        setState(() {});
+      });
+    } else {
+      _myPlayer.stopPlayer().then((value) {
+        setState(() {});
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    //boolean indicating if normal percentage is higher
     bool isNormal =
         widget.recording.normalPercentage > widget.recording.bruitPercentage
             ? true
@@ -44,7 +56,7 @@ class _RecordingItemState extends State<RecordingItem> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -53,7 +65,9 @@ class _RecordingItemState extends State<RecordingItem> {
               width: 8,
               height: 41,
               decoration: BoxDecoration(
-                color: isNormal ? Color(0xFF0AA1FF) : Color(0xFFFF0A39),
+                color: isNormal
+                    ? const Color(0xFF0AA1FF)
+                    : const Color(0xFFFF0A39),
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -80,26 +94,8 @@ class _RecordingItemState extends State<RecordingItem> {
               ),
             ),
             IconButton(
-                onPressed: () async {
-                  if (!_myPlayer.isPlaying) {
-                    await _myPlayer.openPlayer();
-                    await _myPlayer
-                        .startPlayer(
-                            fromURI: widget.recording.filePath,
-                            sampleRate: 16000,
-                            codec: Codec.pcm16WAV,
-                            whenFinished: () {
-                              setState(() {});
-                              print("--------FINISHED");
-                            })
-                        .then((value) {
-                      setState(() {});
-                    });
-                  } else {
-                    _myPlayer.stopPlayer().then((value) {
-                      setState(() {});
-                    });
-                  }
+                onPressed: () {
+                  startPlayer();
                 },
                 icon: _myPlayer.isPlaying
                     ? SvgPicture.asset('lib/assets/stop.svg')
