@@ -21,7 +21,7 @@ class _RecordingItemState extends State<RecordingItem> {
     super.dispose();
   }
 
-  void startPlayer() async {
+  void togglePlayer() async {
     if (!_myPlayer.isPlaying) {
       await _myPlayer.openPlayer();
       await _myPlayer
@@ -95,7 +95,7 @@ class _RecordingItemState extends State<RecordingItem> {
             ),
             IconButton(
                 onPressed: () {
-                  startPlayer();
+                  togglePlayer();
                 },
                 icon: _myPlayer.isPlaying
                     ? SvgPicture.asset('lib/assets/stop.svg')
